@@ -8,7 +8,7 @@ Paper: https://www.biorxiv.org/content/10.1101/2023.11.04.565642v1 <br>
 This repository contains code and well-trained weights for PEST-SP using LoRA, Prompt Tuning and Adapter Tuning with ESM-2 model family.
 The PEFT-SP using LoRA and ESM2-3B backbone outperforms all existing models in Signal Peptide prediction task.
 
-[![PEFT-SP model](https://raw.githubusercontent.com/shuaizengMU/PEFT-SP/master/figures/PEFP-SP_architecture.png)]
+![PEFT-SP model](https://raw.githubusercontent.com/shuaizengMU/PEFT-SP/master/figures/PEFP-SP_architecture.png)
 
 
 ## Installation
@@ -17,7 +17,7 @@ The PEFT-SP using LoRA and ESM2-3B backbone outperforms all existing models in S
 - Create and activate the conda environment.
 ```
 conda env create -f PEFT_SP_env.yaml
-conda activate IRnet_env
+conda activate PEFT_SP_env
 ```
 
 ## Training
@@ -47,3 +47,8 @@ If you find PEFT-SP useful in your research, we ask that you cite the paper:
 	journal = {bioRxiv}
 }
 ```
+
+## License <a name="license"></a>
+
+This source code is licensed under the MIT license found in the `LICENSE` file
+in the root directory of this source tree.
