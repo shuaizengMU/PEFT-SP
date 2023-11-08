@@ -1,1 +1,3 @@
 __pycache__/
+torch_hub/checkpoints/*.pt
+testruns/

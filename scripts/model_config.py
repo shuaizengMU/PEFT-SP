@@ -13,6 +13,22 @@ class PeftSPConfig():
   """
   This is the configuration class to store the configuration of a model that
   consists of a ESM model and a CRF layer.
+  
+  Args:
+      num_labels (int): number of labels each position of sequence.
+      num_global_labels (int): number of global labels.
+      lm_output_dropout (float): dropout rate for the output of ESM.
+      lm_output_position_dropout (float): dropout applied to LM output, 
+          drops full hidden states from sequence.
+      crf_scaling_factor (float): scaling factor for CRF loss.
+      sp_region_labels (bool): Use Signal Peptide region labels or not.
+      kingdom_embed_size (int): Size of kingdom embedding.
+      constrain_crf (bool): Whether to constrain CRF transitions.
+      kingdom_as_token (bool): Whether to use kingdom id as token.
+      global_label_as_input (bool): Whether to use global label as input.
+      model_architecture (int): The architecture of the ESM-2 model.
+      model_seq (str): Model of backbone.
+      model_prompt (str): Model of prompt.
   """
 
   def __init__(self,
@@ -31,22 +47,6 @@ class PeftSPConfig():
                model_prompt: str,
                ):
     """Initialization for EsmCRFConfig.
-    
-    Args:
-        num_labels (int): number of labels each position of sequence.
-        num_global_labels (int): number of global labels.
-        lm_output_dropout (float): dropout rate for the output of ESM.
-        lm_output_position_dropout (float): dropout applied to LM output, 
-            drops full hidden states from sequence.
-        crf_scaling_factor (float): scaling factor for CRF loss.
-        sp_region_labels (bool): Use Signal Peptide region labels or not.
-        kingdom_embed_size (int): Size of kingdom embedding.
-        constrain_crf (bool): Whether to constrain CRF transitions.
-        kingdom_as_token (bool): Whether to use kingdom id as token.
-        global_label_as_input (bool): Whether to use global label as input.
-        model_architecture (int): The architecture of the ESM-2 model.
-        model_seq (str): Model of backbone.
-        model_prompt (str): Model of prompt.
     """
 
     self.num_labels = num_labels

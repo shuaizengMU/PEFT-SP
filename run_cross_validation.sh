@@ -61,41 +61,17 @@ NUM_END_IA3=0
 # FINETUNE, PROMPT, TEST
 TRAINING_MODE="TEST"
 
-
-echo $TRAINING_MODE
-
-if [ $TRAINING_MODE = "FINETUNE" ]; then
-  echo "FINETUNE"
-
-elif [ $TRAINING_MODE = "PROMPT" ]; then
-  echo "PROMPT"
-
-elif [ $TRAINING_MODE = "TEST" ]; then
-  ### Single
-
-parallel -j 1  \
-  python scripts/train.py --data $DATASET \
-  --test_partition {1} \
-  --validation_partition {2} \
-  --output_dir testruns/$SERIES_NAME \
-  --experiment_name $EXPERIMENT_NAME \
-  --remove_top_layers 1 \
-  --sp_region_labels \
-  --region_regularization_alpha 0.5 \
-  --constrain_crf \
-  --average_per_kingdom \
-  --batch_size 20 \
-  --epochs 3 \
-  --optimizer adamax \
-  --lr 0.005 \
-  --freeze_backbone \
-  --prompt_len $PROMPT_LEN \
-  --num_end_lora_layers $NUM_END_LORA \
-  --num_lora_r $NUM_LORA_RANK \
-  --num_lora_alpha $NUM_LORA_ALPHA \
-::: {0..2} ::: {0..2}
-
-else
-  echo $TRAINING_MODE
-  exit 1
-fi
+python scripts/cross_validate.py \
+--data $TEST_DATASET \
+--model_base_path testruns/$SERIES_NAME/$EXPERIMENT_NAME \
+--n_partitions 3 \
+--output_file testruns/$SERIES_NAME/$EXPERIMENT_NAME/crossval_metrics.csv \
+--model_architecture $MODEL_NAME \
+--constrain_crf \
+--average_per_kingdom \
+--sp_region_labels \
+--prompt_method $PROMPT_METHOD \
+--prompt_len $PROMPT_LEN \
+--num_end_lora_layers $NUM_END_LORA \
+--num_lora_r $NUM_LORA_RANK \
+--num_lora_alpha $NUM_LORA_ALPHA 

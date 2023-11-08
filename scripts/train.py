@@ -1,21 +1,25 @@
+"""Main function to training PEFT-SP using PEFT method and ESM-2 models.
 """
-main function to training model.
-
-Author: Shuai Zeng (zengs@umsystem.edu)
-"""
-import argparse
 import os
+import argparse
 import logging
 import torch
-
-from model_config import PeftSPConfig
-import args_maker
-from utilities import esm_utilities, prompts
 import pandas as pd
 import numpy as np
 
 from typing import Tuple, Dict
+from peft import LoraConfig, get_peft_model
+from torch.utils.data import DataLoader
+from sklearn.metrics import (
+    matthews_corrcoef,
+    recall_score,
+    precision_score,
+)
 
+import args_maker
+
+from model_config import PeftSPConfig
+from utilities import esm_utilities, prompts
 from signalp6.models import PeftSPEsmCRF
 from signalp6.training_utils import (
     SIGNALP_KINGDOM_DICT,
@@ -25,18 +29,9 @@ from signalp6.training_utils import (
 from signalp6.utils import get_metrics_multistate
 from signalp6.utils import class_aware_cosine_similarities, get_region_lengths
 
-from peft import LoraConfig, get_peft_model
-from torch.utils.data import DataLoader
-
-from sklearn.metrics import (
-    matthews_corrcoef,
-    recall_score,
-    precision_score,
-)
-
 
 DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-torch.hub.set_dir("/home/zengs/zengs_data/torch_hub")
+torch.hub.set_dir("./torch_hub")
 
 
 def setup_logger(output_dir: str = None):
