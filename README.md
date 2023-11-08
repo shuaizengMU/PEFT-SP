@@ -21,13 +21,20 @@ conda activate PEFT_SP_env
 ```
 
 ## Training
-The training script in `scripts/train.py`. The ESM-2 model would be downloaded in `ESM2_models`. The examples to train the PEFT-SP using LoRA, Prompt Tuning and Adapter Tuning using ESM-2 model family are in `./run_peft_sp.sh`. 
+The training script is in `scripts/train.py`. The ESM-2 model would be downloaded in `ESM2_models`. The examples to train the PEFT-SP using LoRA, Prompt Tuning and Adapter Tuning using ESM-2 model family are in `./run_peft_sp.sh`. 
 
-One of example to train PEFT-SP using LoRA with ESM2-150M is shown below:
+An example to train PEFT-SP using LoRA with ESM2-150M is shown below:
 ```
 python scripts/train.py --data data/small_data/small_dataset_30.fasta --test_partition 0 --validation_partition 1 --output_dir testruns --experiment_name ESM2-150M --remove_top_layers 1 --sp_region_labels --region_regularization_alpha 0.5 --constrain_crf --average_per_kingdom --batch_size 20 --epochs 3 --optimizer adamax --lr 0.005 --freeze_backbone --prompt_len 0 --num_end_lora_layers 25 --num_lora_r 8 --num_lora_alpha 8
 ```
 
+## Evaluation (Cross-validation)
+The evaluation script is in `scripts/cross_validate.py`. The examples for the evaluation of PEFT-SP are in `./run_cross_validation.sh`
+
+An example to evaluate PEFT-SP using LoRA with ESM2-150M is shown below:
+```
+python scripts/cross_validate.py --data data/small_data/small_dataset_30.fasta --model_base_path testruns/BestLora/ESM2-150M --n_partitions 3 --output_file testruns/BestLora/ESM2-150M/crossval_metrics.csv --model_architecture esm2_t30_150M_UR50D --constrain_crf --average_per_kingdom --sp_region_labels --prompt_method NoPrompt --prompt_len 0 --num_end_lora_layers 25 --num_lora_r 8 --num_lora_alpha 8
+```
 
 
 ## Citations <a name="citations"></a>

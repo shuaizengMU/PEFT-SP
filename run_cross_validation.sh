@@ -61,7 +61,7 @@ NUM_END_IA3=0
 # FINETUNE, PROMPT, TEST
 TRAINING_MODE="TEST"
 
-python scripts/cross_validate.py \
+echo python scripts/cross_validate.py \
 --data $TEST_DATASET \
 --model_base_path testruns/$SERIES_NAME/$EXPERIMENT_NAME \
 --n_partitions 3 \
