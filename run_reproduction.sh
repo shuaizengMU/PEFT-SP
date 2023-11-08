@@ -15,10 +15,16 @@
 #
 #-------------------------------------------------------------------------------
 
-source ~/data/anaconda3/bin/activate ~/data/anaconda3/envs/venv_pl
-
 export WANDB_MODE=disabled
 export CUDA_VISIBLE_DEVICES="0,1,2,3"
+
+
+
+# data/small_data/small_dataset_30.fasta
+# data/train_set.fasta
+DATASET="data/small_data/small_dataset_30.fasta"
+TEST_DATASET="data/small_data/small_dataset_30.fasta"
+
 
 # esm2_t48_15B_UR50D
 # esm2_t36_3B_UR50D
@@ -28,38 +34,41 @@ MODEL_NAME="esm2_t30_150M_UR50D"
 EXPERIMENT_NAME="ESM2-150M"
 SERIES_NAME="BestLora"
 
-# data/finetune_prompt/TATLIPO_PILIN/prompt_set.fasta
-# data/small_data/small_dataset_30.fasta
-# data/train_set.fasta
-DATASET="data/small_data/small_dataset_30.fasta"
-TEST_DATASET="data/small_data/small_dataset_30.fasta"
+# PROMPT_METHOD="NoPrompt"
+# LEARNING_RATE=0.006950570420823288
 
-# SoftPromptAll
-# SoftPromptFirst
-# SoftPromptLast
-# SoftPromptTopmost
-# NoPrompt
+# # Prompt
+# NUM_END_PROMPT=0
+# PROMPT_LEN=0
+# NUM_BOTTLENECK_SIZE=0
+
+# # Apdapter
+# NUM_END_ADAPTER=0
+
+# # Lora
+# NUM_END_LORA=25
+# NUM_LORA_RANK=8
+# NUM_LORA_ALPHA=8
+
+
+# # FINETUNE, PROMPT, TEST
+# TRAINING_MODE="TEST"
+
+
+### LoRA
+MODEL_NAME="esm2_t30_150M_UR50D"
+EXPERIMENT_NAME="ESM2-150M"
+SERIES_NAME="BestLora"
+
 PROMPT_METHOD="NoPrompt"
 LEARNING_RATE=0.006950570420823288
-
-# Prompt
 NUM_END_PROMPT=0
 PROMPT_LEN=0
 NUM_BOTTLENECK_SIZE=0
-
-# Apdapter
 NUM_END_ADAPTER=0
-
-# Lora
 NUM_END_LORA=25
 NUM_LORA_RANK=8
 NUM_LORA_ALPHA=8
-
-# IA3
-NUM_END_IA3=0
-
-# FINETUNE, PROMPT, TEST
-TRAINING_MODE="TEST"
 
 python scripts/cross_validate.py \
 --data $TEST_DATASET \

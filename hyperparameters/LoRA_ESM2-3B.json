@@ -1,0 +1,6 @@
+{
+  "lr": 0.006721073999921042,
+  "num_end_lora_layers": 35,
+  "num_lora_r": 8,
+  "best_mcc_global": 0.9285180145797586
+}
