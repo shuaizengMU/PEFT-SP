@@ -5,11 +5,11 @@
 Paper: https://www.biorxiv.org/content/10.1101/2023.11.04.565642v1 <br>
 
 
-This repository contains code and well-trained weights for PEST-SP using LoRA, Prompt Tuning and Adapter Tuning with ESM-2 model family.
+This repository contains code and well-trained weights for PEFT-SP using LoRA, Prompt Tuning and Adapter Tuning with ESM-2 model family.
 The PEFT-SP using LoRA and ESM2-3B backbone outperforms all existing models in Signal Peptide prediction task.
 
 ![PEFT-SP model](https://raw.githubusercontent.com/shuaizengMU/PEFT-SP/master/figures/PEFP-SP_architecture.png)
-
+*Fig. 1. The architectures for the ESM-2 model and PEFT-SP using different PEFT modules. The light green modules are tunable during training, while the grey modules are fixed. (A) The ESM-2 backbone model uses amino acid sequences to SP and CS. (B) PEFT-SP using Adapter Tuning contains a bottleneck architecture. (C) PEFT-SP using Prompt Tuning appends soft embedding into token embedding. (D) PEFT-SP using LoRA adds trainable rank decomposition matrices into the selfattention layer.*
 
 ## Installation
 - Anaconda3 required (tested on version 4.12.0)
