@@ -31,7 +31,8 @@ from signalp6.utils import class_aware_cosine_similarities, get_region_lengths
 
 
 DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-torch.hub.set_dir("./torch_hub")
+# torch.hub.set_dir("./torch_hub")
+torch.hub.set_dir("/home/zengs/zengs_data/torch_hub")
 
 
 def setup_logger(output_dir: str = None):
@@ -594,11 +595,11 @@ def main(args):
   logger.info(print_trainable_parameters(model))
   logger.info(model)
 
-  # make CRF trainable.
-  for name, param in model.named_parameters():
-    if ("outputs_to_emissions" in name or "crf.transitions" in name or
-            "crf.start_transitions" in name or "crf.end_transitions" in name):
-      param.requires_grad = True
+  # # make CRF trainable.
+  # for name, param in model.named_parameters():
+  #   if ("outputs_to_emissions" in name or "crf.transitions" in name or
+  #           "crf.start_transitions" in name or "crf.end_transitions" in name):
+  #     param.requires_grad = True
 
   logger.info("**********************************")
   logger.info("Trainbel parameters:")
@@ -672,13 +673,13 @@ def main(args):
     optimizer = torch.optim.Adamax(
         transformer_to_optimize, lr=args.lr, weight_decay=args.wdecay
     )
-
-    classifier_to_optimize = (
-        list(model.base_model.model.outputs_to_emissions.parameters())
-        + list(model.base_model.model.crf.parameters()))
-    optimizer_classifier = torch.optim.Adamax(
-        classifier_to_optimize, lr=0.0000001, weight_decay=args.wdecay
-    )
+    optimizer_classifier = None
+    # classifier_to_optimize = (
+    #     list(model.base_model.model.outputs_to_emissions.parameters())
+    #     + list(model.base_model.model.crf.parameters()))
+    # optimizer_classifier = torch.optim.Adamax(
+    #     classifier_to_optimize, lr=0.0000001, weight_decay=args.wdecay
+    # )
 
   else:
     optimizer = torch.optim.Adamax(

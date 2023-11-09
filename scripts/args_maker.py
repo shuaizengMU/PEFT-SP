@@ -331,7 +331,7 @@ def cross_validate_args():
                "esm2_t33_650M_UR50D",
                "esm2_t30_150M_UR50D",
                "esm2_t12_35M_UR50D"],
-      default="esm2_t30_150M_UR50D",
+      default=None,
       help="which model architecture the checkpoint is for",
   )
   parser.add_argument(
