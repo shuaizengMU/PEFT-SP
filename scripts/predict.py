@@ -1,30 +1,27 @@
-""" Compute cross-validated metrics. 
-Run each model on its test set, compute all metrics and save as .csv
-
-The original code is from SignalP 6.0.
+"""Predict signal peptide type and cleavage site.
 """
 import torch
-import os
 import pandas as pd
-import random
+import numpy as np
 
 from peft import LoraConfig, get_peft_model
-from tqdm import tqdm
+from collections import defaultdict
 
 import args_maker
 from signalp6.models import PeftSPEsmCRF
-from signalp6.training_utils import ESM2CRFDataset
-from signalp6.utils import get_metrics_multistate
+from signalp6.training_utils import ESM2CRFDPredictionataset
+from signalp6.utils import tagged_seq_to_cs_multiclass
+from signalp6.utils import metrics_utils
 from model_config import PeftSPConfig
 from utilities import esm_utilities, prompts
 
 DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-torch.hub.set_dir("./torch_hub")
+torch.hub.set_dir("/home/zengs/zengs_data/torch_hub")
 
 
 def main():
 
-  args = args_maker.cross_validate_args()
+  args = args_maker.prediction_args()
   assert "esm" in args.model_architecture, "Only support esm model."
 
   # backbnone model
@@ -61,98 +58,82 @@ def main():
                         model_seq=model_seq,
                         model_prompt=model_prompt)
 
+  # Load data
+  dataset = ESM2CRFDPredictionataset(
+      args.data,
+      batch_converter=batch_converter,
+  )
 
-  # Collect results + header info to build output df
-  partitions = list(range(args.n_partitions))
+  dataloader = torch.utils.data.DataLoader(
+      dataset, collate_fn=dataset.collate_fn, batch_size=50
+  )
 
-  # for result collection
-  metrics_list = []
-  for partition in tqdm(partitions):
-    # Load data
-    dataset = ESM2CRFDataset(
-        args.data,
-        batch_converter=batch_converter,
-        partition_id=[partition],
-        add_special_tokens=True,
-    )
+  model = PeftSPEsmCRF(config)
+  if args.num_end_lora_layers > 0:
+    print(f"Using LoRA: rank {args.num_lora_r}, "
+          f"at last {args.num_end_lora_layers} layers.")
+    target_modules = []
+    start_layer_idx = num_esm_layers - args.num_end_lora_layers
+    for idx in range(start_layer_idx, num_esm_layers):
+      for layer_name in [
+          "self_attn.q_proj", "self_attn.k_proj",
+              "self_attn.v_proj", "self_attn.out_proj"]:
+        target_modules.append(f"layers.{idx}.{layer_name}")
 
-    if args.randomize_kingdoms:
-      kingdoms = list(set(dataset.kingdom_ids))
-      random_kingdoms = random.choices(
-          kingdoms, k=len(dataset.kingdom_ids))
-      dataset.kingdom_ids = random_kingdoms
-      print("randomized kingdom IDs")
+    peft_config = LoraConfig(inference_mode=True,
+                             r=args.num_lora_r,
+                             lora_alpha=args.num_lora_alpha,
+                             target_modules=target_modules,
+                             lora_dropout=0.1,
+                             bias="none",)
+    model = get_peft_model(model, peft_config)
 
-    dl = torch.utils.data.DataLoader(
-        dataset, collate_fn=dataset.collate_fn, batch_size=50
-    )
-    
-    
-    model = PeftSPEsmCRF(config)
-    if args.num_end_lora_layers > 0:
-      print(f"Using LoRA: rank {args.num_lora_r}, "
-            f"at last {args.num_end_lora_layers} layers.")
-      target_modules = []
-      start_layer_idx = num_esm_layers - args.num_end_lora_layers
-      for idx in range(start_layer_idx, num_esm_layers):
-        for layer_name in [
-            "self_attn.q_proj", "self_attn.k_proj",
-            "self_attn.v_proj","self_attn.out_proj"]:
-          target_modules.append(f"layers.{idx}.{layer_name}")
+  model.load_state_dict(torch.load(args.model_filename))
+  model.to(DEVICE)
 
-      peft_config = LoraConfig(inference_mode=True,
-                                r=args.num_lora_r,
-                                lora_alpha=args.num_lora_alpha,
-                                target_modules=target_modules,
-                                lora_dropout=0.1,
-                                bias="none",)
-    model.load_state_dict(torch.load(checkpoint))
+  all_global_probs = []
+  all_pos_preds = []
+  for _, batch in enumerate(dataloader):
+    (
+        data,
+        input_mask,
+    ) = batch
+    kingdom_ids = None
 
-
-    # Put together list of checkpoints
-    checkpoints = [
-        os.path.join(
-            args.model_base_path, f"test_{partition}_valid_{x}", "model.pt")
-        for x in set(partitions).difference({partition})]
-
-    # Run
-    print(checkpoints)
-    for checkpoint in checkpoints:
-      model = PeftSPEsmCRF(config)
-
-      if args.num_end_lora_layers > 0:
-        print(f"Using LoRA: rank {args.num_lora_r}, "
-              f"at last {args.num_end_lora_layers} layers.")
-        target_modules = []
-        start_layer_idx = num_esm_layers - args.num_end_lora_layers
-        for idx in range(start_layer_idx, num_esm_layers):
-          for layer_name in [
-              "self_attn.q_proj", "self_attn.k_proj",
-              "self_attn.v_proj","self_attn.out_proj"]:
-            target_modules.append(f"layers.{idx}.{layer_name}")
-
-        peft_config = LoraConfig(inference_mode=True,
-                                 r=args.num_lora_r,
-                                 lora_alpha=args.num_lora_alpha,
-                                 target_modules=target_modules,
-                                 lora_dropout=0.1,
-                                 bias="none",)
-
-        model = get_peft_model(model, peft_config)
-
-      model.load_state_dict(torch.load(checkpoint))
-      setattr(model, "use_pvd", args.use_pvd)  # ad hoc fix to use pvd
-
-      metrics = get_metrics_multistate(
-          model,
-          dl,
-          sp_tokens=[3, 7, 11, 15, 19] if args.no_multistate else None,
-          compute_region_metrics=False, args=args
+    data = data.to(DEVICE)
+    input_mask = input_mask.to(DEVICE)
+    with torch.no_grad():
+      global_probs, _, pos_preds = model(
+          data, input_mask=input_mask, kingdom_ids=kingdom_ids
       )
-      metrics_list.append(metrics)  # save metrics
 
-  df = pd.DataFrame.from_dict(metrics_list)
-  df.T.to_csv(args.output_file)
+      all_global_probs.append(global_probs.detach().cpu().numpy())
+      all_pos_preds.append(pos_preds.detach().cpu().numpy())
+
+  all_global_probs = np.concatenate(all_global_probs)
+  all_pos_preds = np.concatenate(all_pos_preds)
+
+  all_global_preds = all_global_probs.argmax(axis=1)
+  sp_tokens = [3, 7, 11, 15, 19]
+  all_cs_preds = tagged_seq_to_cs_multiclass(all_pos_preds, sp_tokens=sp_tokens)
+
+  # save results
+  pred_dl = defaultdict(list)
+  for idx in range(len(dataset)):
+    sp_type_id = all_global_preds[idx]
+    sp_type_name = metrics_utils.REVERSE_GLOBAL_LABEL_DICT[sp_type_id]
+    cv_position = all_cs_preds[idx]
+    sp_probs = np.round(all_global_probs[idx], 3)
+
+    pred_dl["sp_type_id"].append(sp_type_id)
+    pred_dl["sp_type_name"].append(sp_type_name)
+    pred_dl["cv_position"].append(cv_position)
+    pred_dl["sp_type_probabilities"].append(sp_probs)
+
+  result_df = pd.DataFrame.from_dict(pred_dl)
+  result_df.to_csv(args.output_file, index=False)
+  
+  print(result_df)
 
 
 if __name__ == "__main__":

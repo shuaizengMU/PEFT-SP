@@ -450,3 +450,128 @@ def cross_validate_args():
 
   args = parser.parse_args()
   return args
+
+
+def prediction_args():
+
+  parser = argparse.ArgumentParser()
+  parser.add_argument(
+      "--data",
+      type=str,
+  )
+  parser.add_argument("--output_file", type=str,
+                      default="prediction.csv")
+  parser.add_argument(
+      "--model_architecture", type=str,
+      choices=["bert_prottrans",
+               "esm2_t48_15B_UR50D",
+               "esm2_t36_3B_UR50D",
+               "esm2_t33_650M_UR50D",
+               "esm2_t30_150M_UR50D",
+               "esm2_t12_35M_UR50D"],
+      default=None,
+      help="which model architecture the checkpoint is for",
+  )
+  parser.add_argument(
+      "--max_length", type=int, default=70,
+      help="max length of sequence",
+  )
+  parser.add_argument(
+      "--prompt_len", type=int, default=0,
+      help="prompt length",
+  )
+  parser.add_argument(
+      "--freeze_backbone", action="store_true",
+      help="freeze backbone model",
+  )
+  parser.add_argument("--lm_output_dropout",
+                      type=float, default=0.1,
+                      help="dropout applied to LM output",)
+  parser.add_argument("--num_seq_labels", type=int, default=37)
+  parser.add_argument("--num_global_labels", type=int, default=6)
+  parser.add_argument(
+      "--lm_output_position_dropout",
+      type=float,
+      default=0.1,
+      help=("dropout applied to LM output, "
+            "drops full hidden states from sequence"),
+  )
+  parser.add_argument(
+      "--crf_scaling_factor",
+      type=float,
+      default=1.0,
+      help="Scale CRF NLL by this before adding to global label loss",
+  )
+  parser.add_argument(
+      "--sp_region_labels", action="store_true",
+      help="",
+  )
+  parser.add_argument(
+      "--kingdom_embed_size",
+      type=int,
+      default=0,
+      help=("If >0, embed kingdom ids to N and "
+            "concatenate with LM hidden states before CRF."),
+  )
+  parser.add_argument(
+      "--constrain_crf",
+      action="store_true",
+      help="Constrain the transitions of the region-tagging CRF.",
+  )
+  parser.add_argument(
+      "--kingdom_as_token",
+      action="store_true",
+      help="Kingdom ID is first token in the sequence",
+  )
+  parser.add_argument(
+      "--average_per_kingdom",
+      action="store_true",
+      help="Average MCCs per kingdom instead of overall computatition",
+  )
+  parser.add_argument(
+      "--global_label_as_input",
+      action="store_true",
+      help=("Add the global label to the input sequence "
+            "(only predict CS given a known label)"),
+  )
+  parser.add_argument(
+      "--prompt_method", type=str, default="NoPrompt",
+      choices=["SoftPromptAll",
+               "SoftPromptFirst",
+               "SoftPromptLast",
+               "SoftPromptTopmost",
+               "NoPrompt"],
+      help="prompt method",
+  )
+  parser.add_argument(
+      "--num_end_adapter_layers", type=int, default=0,
+      help="number of end adapter layers.",
+  )
+  parser.add_argument(
+      "--res_mlp_bottleneck_size", type=int, default=0,
+      help="res mlp bottleneck size.",
+  )
+  parser.add_argument("--use_adapter", action="store_true",
+                      help="use adapter")
+  parser.add_argument("--optuna_use_lora", action="store_true",
+                      help="use lora")
+  parser.add_argument("--optuna_use_ia3", action="store_true",
+                      help="use ia3")
+  parser.add_argument("--use_embedding_encoder", action="store_true",
+                      help="use embedding encoder")
+  parser.add_argument("--num_end_prompt_layers", type=int,
+                      help="number of end prompt layers.")
+  parser.add_argument("--num_end_lora_layers", type=int,
+                      help="number of end lora layers.")
+  parser.add_argument("--num_lora_r", type=int,
+                      help="value of rank (r) in lora.")
+  parser.add_argument("--num_lora_alpha", type=int,
+                      help="value of alpha in lora.")
+  parser.add_argument("--num_end_ia3_layers", type=int,
+                      help="number of end ia3 layers.")
+
+  parser.add_argument("--model_filename", type=str,
+                      help="model filename")
+
+  args = parser.parse_args()
+  return args

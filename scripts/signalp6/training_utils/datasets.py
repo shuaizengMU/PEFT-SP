@@ -1117,14 +1117,15 @@ class ESM2CRFDataset(Dataset):
                 self.sequences = self.sequences + seqs
                 self.labels = self.labels + labs
 
-        self.identifiers, self.sequences, self.labels = subset_dataset(
-            self.identifiers,
-            self.sequences,
-            self.labels,
-            partition_id,
-            kingdom_id,
-            type_id,
-        )
+        if partition_id is not None:
+          self.identifiers, self.sequences, self.labels = subset_dataset(
+              self.identifiers,
+              self.sequences,
+              self.labels,
+              partition_id,
+              kingdom_id,
+              type_id,
+          )
         self.global_labels = [x.split("|")[2] for x in self.identifiers]
         self.kingdom_ids = [x.split("|")[1] for x in self.identifiers]
 
@@ -1260,3 +1261,104 @@ class ESM2CRFDataset(Dataset):
 
         return return_tuple
 
+
+class ESM2CRFDPredictionataset(Dataset):
+    """Converts label sequences to array for multi-state crf.
+    data_path:              training set 3-line fasta
+    sample_weights_path:    optional df with a weight for each Entry in data_path
+    tokenizer:              tokenizer to use for conversion of sequences
+    partition_id :          list of partition ids to use
+    kingdom_id:             list of kingdom ids to use
+    type_id :               list of type ids to use
+    add_special_tokens:     add cls, sep tokens to sequence
+    label_vocab:            str-int mapping for label sequences
+    global_label_dict:      str-int mapping for global labels
+    positive_samples_weight: optional weight that is returned for positive samples
+                             (use for loss scaling)
+    return_kingdom_ids:     deprecated, always returning kingdom id now.
+    make_cs_state:          deprecated, no cs state implemented for multi-tag
+    add_global_label:       add the global label as a token to the start of a sequence
+    augment_data_paths:     paths to additional 3-line fasta files with augmented samples.
+                            are added to the real data.
+    vary_n_region: randomly make n region the first 2 or 3 residues.
+    """
+
+    def __init__(
+        self,
+        data_path: Union[str, Path],
+        sample_weights_path=None,
+        batch_converter: Union[str, PreTrainedTokenizer] = "iupac",
+        label_vocab=None,
+        global_label_dict=None,
+        positive_samples_weight=None,
+        return_kingdom_ids=False,  # legacy
+        make_cs_state=False,  # legacy to not break code when just plugging in this dataset
+        add_global_label=False,
+        augment_data_paths: List[Union[str, Path]] = None,
+        vary_n_region=False,
+    ):
+
+        super().__init__()
+
+        # set up parameters
+
+        self.data_file = Path(data_path)
+        if not self.data_file.exists():
+            raise FileNotFoundError(self.data_file)
+
+        self.vary_n_region = vary_n_region
+
+        self.label_tokenizer = SP_label_tokenizer()
+        self.batch_converter = batch_converter
+
+        self.label_vocab = label_vocab  # None is fine, process_SP will use default
+        self.add_global_label = add_global_label
+        self.global_label_dict = (
+            global_label_dict
+            if global_label_dict is not None
+            else SIGNALP6_GLOBAL_LABEL_DICT
+        )
+
+        # Load and filter the data
+        self.identifiers, self.sequences = self.parse_twoline_fasta(
+            self.data_file
+        )
+
+
+    def parse_twoline_fasta(self, filepath):
+      with open(filepath, "r") as f:
+          lines = f.read().splitlines()  # f.readlines()
+          identifiers = lines[::2]
+          sequences = lines[1::2]
+
+      return identifiers, sequences
+    
+    def __len__(self) -> int:
+        return len(self.sequences)
+
+    def __getitem__(self, index):
+        item = self.sequences[index]
+
+        _, _, token_ids = self.batch_converter([(
+          "", item)])  # + [self.tokenizer.stop_token]
+        
+        token_ids = torch.squeeze(token_ids)
+        input_mask = np.ones_like(token_ids)
+
+        return_tuple = (
+            np.array(token_ids),
+            np.array(input_mask),
+        )
+        return return_tuple
+
+    # needs new collate_fn, targets need to be padded and stacked.
+    def collate_fn(self, batch: List[Any]) -> Dict[str, torch.Tensor]:
+        # unpack the list of tuples
+        
+        input_ids, mask = tuple(zip(*batch))
+        data = torch.from_numpy(pad_sequences(input_ids, 0))
+        # ignore_index is -1
+        mask = torch.from_numpy(pad_sequences(mask, 0))
+        return_tuple = (data, mask)
+        
+        return return_tuple

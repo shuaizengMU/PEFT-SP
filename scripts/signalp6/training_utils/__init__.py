@@ -2,6 +2,7 @@ from .datasets import (
     LargeCRFPartitionDataset,
     RegionCRFDataset,
     ESM2CRFDataset,
+    ESM2CRFDPredictionataset,
     SIGNALP6_GLOBAL_LABEL_DICT,
     SIGNALP_KINGDOM_DICT,
 )

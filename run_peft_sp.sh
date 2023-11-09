@@ -18,21 +18,21 @@
 source ~/data/anaconda3/bin/activate ~/data/anaconda3/envs/venv_pl
 
 export WANDB_MODE=disabled
-# export CUDA_VISIBLE_DEVICES="0,1,2,3"
+export CUDA_VISIBLE_DEVICES="0,1,2,3"
 
 # esm2_t48_15B_UR50D
 # esm2_t36_3B_UR50D
 # esm2_t33_650M_UR50D
 # esm2_t30_150M_UR50D
-MODEL_NAME="esm2_t36_3B_UR50D"
-EXPERIMENT_NAME="ESM2-3B"
+MODEL_NAME="esm2_t30_150M_UR50D"
+EXPERIMENT_NAME="ESM2-150M"
 SERIES_NAME="BestLora"
 
 # data/finetune_prompt/TATLIPO_PILIN/prompt_set.fasta
 # data/small_data/small_dataset_30.fasta
 # data/train_set.fasta
-DATASET="data/train_set.fasta"
-TEST_DATASET="data/train_set.fasta"
+DATASET="data/small_data/small_dataset_30.fasta"
+TEST_DATASET="data/small_data/small_dataset_30.fasta"
 
 # SoftPromptAll
 # SoftPromptFirst
@@ -51,7 +51,7 @@ NUM_BOTTLENECK_SIZE=0
 NUM_END_ADAPTER=0
 
 # Lora
-NUM_END_LORA=35
+NUM_END_LORA=33
 NUM_LORA_RANK=8
 NUM_LORA_ALPHA=8
 
@@ -73,8 +73,8 @@ elif [ $TRAINING_MODE = "PROMPT" ]; then
 elif [ $TRAINING_MODE = "TEST" ]; then
   ### Single
 
-parallel -j 6  \
-  CUDA_VISIBLE_DEVICES={1} python scripts/train.py --data $DATASET \
+parallel -j 1  \
+  python scripts/train.py --data $DATASET \
   --test_partition {1} \
   --validation_partition {2} \
   --output_dir testruns/$SERIES_NAME \
@@ -86,7 +86,7 @@ parallel -j 6  \
   --constrain_crf \
   --average_per_kingdom \
   --batch_size 20 \
-  --epochs 30 \
+  --epochs 3 \
   --optimizer adamax \
   --lr $LEARNING_RATE \
   --freeze_backbone \
