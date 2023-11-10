@@ -18,14 +18,14 @@
 source ~/data/anaconda3/bin/activate ~/data/anaconda3/envs/venv_pl
 
 export WANDB_MODE=disabled
-export CUDA_VISIBLE_DEVICES="2,3"
+export CUDA_VISIBLE_DEVICES="0,1,2,3"
 
 # esm2_t48_15B_UR50D
 # esm2_t36_3B_UR50D
 # esm2_t33_650M_UR50D
 # esm2_t30_150M_UR50D
-MODEL_NAME="esm2_t36_3B_UR50D"
-EXPERIMENT_NAME="ESM2-3B"
+MODEL_NAME="esm2_t30_150M_UR50D"
+EXPERIMENT_NAME="ESM2-150M"
 SERIES_NAME="BestLora"
 
 # data/finetune_prompt/TATLIPO_PILIN/prompt_set.fasta

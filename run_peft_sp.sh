@@ -28,11 +28,10 @@ MODEL_NAME="esm2_t30_150M_UR50D"
 EXPERIMENT_NAME="ESM2-150M"
 SERIES_NAME="BestLora"
 
-# data/finetune_prompt/TATLIPO_PILIN/prompt_set.fasta
 # data/small_data/small_dataset_30.fasta
 # data/train_set.fasta
-DATASET="data/small_data/small_dataset_30.fasta"
-TEST_DATASET="data/small_data/small_dataset_30.fasta"
+DATASET="data/train_set.fasta"
+TEST_DATASET="data/train_set.fasta"
 
 # SoftPromptAll
 # SoftPromptFirst

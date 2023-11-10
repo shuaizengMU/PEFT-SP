@@ -29,9 +29,6 @@ EXPERIMENT_NAME="ESM2-150M"
 SERIES_NAME="BestLora"
 
 # data/prediction_testcase.fasta
-# data/small_data/small_dataset_30.fasta
-# data/train_set.fasta
-DATASET="data/small_data/small_dataset_30.fasta"
 TEST_DATASET="data/prediction_testcase.fasta"
 
 # SoftPromptAll
