@@ -18,18 +18,18 @@
 source ~/data/anaconda3/bin/activate ~/data/anaconda3/envs/venv_pl
 
 export WANDB_MODE=disabled
-export CUDA_VISIBLE_DEVICES="0,1,2,3"
+# export CUDA_VISIBLE_DEVICES="0,1,2,3"
 
 # esm2_t48_15B_UR50D
 # esm2_t36_3B_UR50D
 # esm2_t33_650M_UR50D
 # esm2_t30_150M_UR50D
-MODEL_NAME="esm2_t30_150M_UR50D"
-EXPERIMENT_NAME="ESM2-150M"
+MODEL_NAME="esm2_t36_3B_UR50D"
+EXPERIMENT_NAME="ESM2-3B"
 SERIES_NAME="BestLora"
 
 # data/prediction_testcase.fasta
-TEST_DATASET="data/prediction_testcase.fasta"
+TEST_DATASET="data/small_data/predictioncase_2_small_dataset_30.fasta"
 
 # SoftPromptAll
 # SoftPromptFirst
@@ -48,16 +48,16 @@ NUM_BOTTLENECK_SIZE=0
 NUM_END_ADAPTER=0
 
 # Lora
-NUM_END_LORA=33
+NUM_END_LORA=35
 NUM_LORA_RANK=8
 NUM_LORA_ALPHA=8
 
 
 python scripts/predict.py \
 --data $TEST_DATASET \
---output_file ./prediction.csv \
+--output_file ./prediction_small_2.csv \
 --model_architecture $MODEL_NAME \
---model_filename testruns/BestLora/ESM2-150M/test_0_valid_1/model.pt \
+--model_filename testruns/BestLora/FD_ESM150M_Lora/test_2_valid_0/model.pt \
 --constrain_crf \
 --average_per_kingdom \
 --sp_region_labels \
