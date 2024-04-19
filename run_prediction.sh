@@ -29,7 +29,7 @@ EXPERIMENT_NAME="ESM2-3B"
 SERIES_NAME="BestLora"
 
 # data/prediction_testcase.fasta
-TEST_DATASET="data/small_data/predictioncase_2_small_dataset_30.fasta"
+TEST_DATASET="data/large_data/predictioncase_2.fasta"
 
 # SoftPromptAll
 # SoftPromptFirst
@@ -55,9 +55,9 @@ NUM_LORA_ALPHA=8
 
 python scripts/predict.py \
 --data $TEST_DATASET \
---output_file ./prediction_small_2.csv \
+--output_file ./prediction_large_2.csv \
 --model_architecture $MODEL_NAME \
---model_filename testruns/BestLora/FD_ESM150M_Lora/test_2_valid_0/model.pt \
+--model_filename testruns/BestLora/FD_ESM3B_Lora/test_2_valid_0/model.pt \
 --constrain_crf \
 --average_per_kingdom \
 --sp_region_labels \
