@@ -1,10 +1,10 @@
 # PEFT-SP: Parameter-Efficient Fine-Tuning on Large Protein Language Models Improves Signal Peptide Prediction
 
-**[1] Parameter-efficient fine-tuning on large protein language models improves signal peptide prediction** <br>
+**[1] Parameter-efficient fine-tuning on large protein language models improves signal peptide prediction, Genome Research, 2024** <br>
 *Shuai Zeng, Duolin Wang, Lei Jiang, Dong Xu* <br>
 Paper: https://link.springer.com/chapter/10.1007/978-1-0716-3989-4_40 <br>
 
-**[2] Prompt-Based Learning on Large Protein Language Models Improves Signal Peptide Prediction** <br>
+**[2] Prompt-Based Learning on Large Protein Language Models Improves Signal Peptide Prediction, RECOMB, 2023** <br>
 *Shuai Zeng, Duolin Wang, Lei Jiang, Dong Xu* <br>
 Paper: https://link.springer.com/chapter/10.1007/978-1-0716-3989-4_40 <br>
 
