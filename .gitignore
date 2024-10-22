@@ -3,3 +3,5 @@ torch_hub/checkpoints/*.pt
 testruns/
 testruns_results/
 stdout/
+model.zip
+model/*

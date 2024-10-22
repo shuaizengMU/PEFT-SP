@@ -20,6 +20,10 @@ conda env create -f PEFT_SP_env.yaml
 conda activate PEFT_SP_env
 ```
 
+## Models
+- Models fine-tuned with LoRA using different cross-validation data is available at [here](https://mailmissouri-my.sharepoint.com/:u:/g/personal/zengs_umsystem_edu/EYZzIFDmpodGht6chOg_--oBAULuNYdnY6CFyeCLVZhThg?e=5oeDIt).
+
+
 ## Prediction
 The training script is in `scripts/predict.py`. The examples for the prediciton of PEFT-SP are in `./run_prediction.sh`
 An example to prediction of PEFT-SP using LoRA with ESM2-150M is shown below:
