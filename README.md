@@ -29,7 +29,7 @@ conda activate PEFT_SP_env
 ```
 
 ## Models
-- Models fine-tuned with LoRA using different cross-validation data is available at [here](https://mailmissouri-my.sharepoint.com/:u:/g/personal/zengs_umsystem_edu/EYZzIFDmpodGht6chOg_--oBAULuNYdnY6CFyeCLVZhThg?e=5oeDIt).
+- Models (~50 GB) fine-tuned with LoRA using different cross-validation data is available at [here](https://mailmissouri-my.sharepoint.com/:u:/g/personal/zengs_umsystem_edu/EYZzIFDmpodGht6chOg_--oBAULuNYdnY6CFyeCLVZhThg?e=5oeDIt).
 
 
 ## Prediction
