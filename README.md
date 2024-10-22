@@ -1,8 +1,16 @@
 # PEFT-SP: Parameter-Efficient Fine-Tuning on Large Protein Language Models Improves Signal Peptide Prediction
 
-**PEFT-SP: Parameter-Efficient Fine-Tuning on Large Protein Language Models Improves Signal Peptide Prediction** <br>
+**[1] Parameter-efficient fine-tuning on large protein language models improves signal peptide prediction, Genome Research, 2024** <br>
+*Shuai Zeng, Duolin Wang, Lei Jiang, Dong Xu* <br>
+Paper: https://link.springer.com/chapter/10.1007/978-1-0716-3989-4_40 <br>
+
+**[2] Prompt-Based Learning on Large Protein Language Models Improves Signal Peptide Prediction, RECOMB, 2023** <br>
+*Shuai Zeng, Duolin Wang, Lei Jiang, Dong Xu* <br>
+Paper: https://link.springer.com/chapter/10.1007/978-1-0716-3989-4_40 <br>
+
+**[3] PEFT-SP: Parameter-Efficient Fine-Tuning on Large Protein Language Models Improves Signal Peptide Prediction** <br>
 *Shuai Zeng, Duolin Wang, Dong Xu* <br>
-Paper: https://www.biorxiv.org/content/10.1101/2023.11.04.565642v1 <br>
+Pre-print: https://www.biorxiv.org/content/10.1101/2023.11.04.565642v1 <br>
 
 
 This repository contains code and well-trained weights for PEFT-SP using LoRA, Prompt Tuning and Adapter Tuning with ESM-2 model family.
